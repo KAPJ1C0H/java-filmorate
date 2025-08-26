@@ -4,7 +4,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
@@ -63,7 +62,7 @@ public class FilmDbStorage extends BaseRepository<Film> implements FilmStorage {
     @Override
     public Film create(Film film) {
         Mpa mpa = mpaDbStorage.findById(film.getMpa().getId())
-                .orElseThrow(() -> new ValidationException("Указанный Mpa не существует."));
+                .orElseThrow(() -> new NotFoundException("Указанный Mpa не существует."));
         Collection<Genre> genres = genreDbStorage.findManyByList(film.getGenres());
         long id = insert(
                 INSERT_QUERY,

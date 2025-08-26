@@ -4,7 +4,7 @@ import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Genre;
 
 import java.sql.PreparedStatement;
@@ -42,7 +42,7 @@ public class GenreDbStorage extends BaseRepository<Genre> {
                 genresId.toArray(),
                 mapper
         );
-        if (result.size() != genresId.size()) throw new ValidationException("Указан Genre с неверным id");
+        if (result.size() != genresId.size()) throw new NotFoundException("Указан Genre с неверным id");
         return result;
     }
 
