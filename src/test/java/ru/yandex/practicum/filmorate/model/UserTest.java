@@ -85,15 +85,15 @@ public class UserTest {
         assertTrue(violations.isEmpty());
 
         user.setBirthday(LocalDate.now().minusDays(1));
-        violations = validator.validate(film);
+        violations = validator.validate(user);
         assertEquals(0, violations.size());
 
         user.setBirthday(LocalDate.now());
-        violations = validator.validate(film);
+        violations = validator.validate(user);
         assertEquals(0, violations.size());
 
         user.setBirthday(LocalDate.now().plusDays(1));
-        violations = validator.validate(film);
+        violations = validator.validate(user);
         assertEquals(1, violations.size());
     }
 }
