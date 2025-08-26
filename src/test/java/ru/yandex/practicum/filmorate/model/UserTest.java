@@ -1,11 +1,11 @@
 package ru.yandex.practicum.filmorate.model;
 
 import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
 import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDate;
 import java.util.Set;
@@ -13,16 +13,17 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SpringBootTest
 public class UserTest {
-    @Autowired
-    private Validator validator;
 
+    private Validator validator;
     private User user;
     private Set<ConstraintViolation<User>> violations;
 
     @BeforeEach
     void setUp() {
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        validator = factory.getValidator();
+
         user = new User();
         user.setId(1);
         user.setEmail("ivan@yandex.ru");
@@ -73,10 +74,10 @@ public class UserTest {
     @Test
     void nameValidationTest() {
         user.setName(null);
-        assertEquals(user.getName(), user.getLogin());
+        assertEquals(user.getLogin(), user.getName());
 
         user.setName(" ");
-        assertEquals(user.getName(), user.getLogin());
+        assertEquals(user.getLogin(), user.getName());
     }
 
     @Test
@@ -84,15 +85,15 @@ public class UserTest {
         assertTrue(violations.isEmpty());
 
         user.setBirthday(LocalDate.now().minusDays(1));
-        violations = validator.validate(user);
+        violations = validator.validate(film);
         assertEquals(0, violations.size());
 
         user.setBirthday(LocalDate.now());
-        violations = validator.validate(user);
+        violations = validator.validate(film);
         assertEquals(0, violations.size());
 
         user.setBirthday(LocalDate.now().plusDays(1));
-        violations = validator.validate(user);
+        violations = validator.validate(film);
         assertEquals(1, violations.size());
     }
 }

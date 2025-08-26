@@ -1,12 +1,11 @@
 package ru.yandex.practicum.filmorate.model;
 
 import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
 import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
 import java.time.LocalDate;
 import java.util.Set;
@@ -14,10 +13,8 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SpringBootTest
 public class FilmTest {
 
-    @Autowired
     private Validator validator;
     private Film film;
     private Set<ConstraintViolation<Film>> violations;
@@ -25,6 +22,9 @@ public class FilmTest {
 
     @BeforeEach
     void setUp() {
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        validator = factory.getValidator();
+
         film = new Film();
         film.setId(1);
         film.setName("IT");
@@ -93,15 +93,15 @@ public class FilmTest {
     void releaseDateValidationTest() {
         assertTrue(violations.isEmpty());
 
-        film.setReleaseDate(FilmStorage.MOVIE_BIRTHDAY.plusDays(1));
+        film.setReleaseDate(LocalDate.of(1895, 12, 28).plusDays(1));
         violations = validator.validate(film);
         assertEquals(0, violations.size());
 
-        film.setReleaseDate(FilmStorage.MOVIE_BIRTHDAY);
+        film.setReleaseDate(LocalDate.of(1895, 12, 28));
         violations = validator.validate(film);
         assertEquals(0, violations.size());
 
-        film.setReleaseDate(FilmStorage.MOVIE_BIRTHDAY.minusDays(1));
+        film.setReleaseDate(LocalDate.of(1895, 12, 27));
         violations = validator.validate(film);
         assertEquals(1, violations.size());
     }
