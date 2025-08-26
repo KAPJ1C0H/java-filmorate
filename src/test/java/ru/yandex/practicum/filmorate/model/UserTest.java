@@ -1,11 +1,11 @@
 package ru.yandex.practicum.filmorate.model;
 
 import jakarta.validation.ConstraintViolation;
-import jakarta.validation.Validation;
 import jakarta.validation.Validator;
-import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDate;
 import java.util.Set;
@@ -13,17 +13,16 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@SpringBootTest
 public class UserTest {
-
+    @Autowired
     private Validator validator;
+
     private User user;
     private Set<ConstraintViolation<User>> violations;
 
     @BeforeEach
     void setUp() {
-        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-        validator = factory.getValidator();
-
         user = new User();
         user.setId(1);
         user.setEmail("ivan@yandex.ru");
@@ -74,10 +73,10 @@ public class UserTest {
     @Test
     void nameValidationTest() {
         user.setName(null);
-        assertEquals(user.getLogin(), user.getName());
+        assertEquals(user.getName(), user.getLogin());
 
         user.setName(" ");
-        assertEquals(user.getLogin(), user.getName());
+        assertEquals(user.getName(), user.getLogin());
     }
 
     @Test
