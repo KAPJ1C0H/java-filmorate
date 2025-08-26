@@ -23,8 +23,12 @@ public class UserTest {
 
     @BeforeEach
     void setUp() {
-        user = new User(1L, "ivan@yandex.ru", "Ivan123", "Ivan",
-                LocalDate.of(1996, 12, 3));
+        user = new User();
+        user.setId(1);
+        user.setEmail("ivan@yandex.ru");
+        user.setLogin("Ivan123");
+        user.setName("Ivan");
+        user.setBirthday(LocalDate.of(1996, 12, 3));
         violations = validator.validate(user);
     }
 

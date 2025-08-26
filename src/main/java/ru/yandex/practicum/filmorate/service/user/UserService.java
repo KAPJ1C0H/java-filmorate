@@ -3,38 +3,31 @@ package ru.yandex.practicum.filmorate.service.user;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.dal.FriendDbStorage;
 import ru.yandex.practicum.filmorate.exception.DuplicatedDataException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Objects;
-import java.util.Set;
 
 @Slf4j
 @Service
 @AllArgsConstructor
 public class UserService {
     private UserStorage userStorage;
+    private FriendDbStorage friendDbStorage;
 
     public Collection<User> getFriends(Long id) {
-        User user = userStorage.findById(id);
-        return user.getFriends().stream()
-                .map(friendId -> userStorage.findById(friendId))
-                .toList();
+        return userStorage.getFriends(id);
     }
 
     public User addFriend(Long userId, Long friendId) {
         if (Objects.equals(userId, friendId)) {
             throw new DuplicatedDataException("Id пользователей не должны совпадать");
         }
-        User user = userStorage.findById(userId);
-        User friend = userStorage.findById(friendId);
-        user.getFriends().add(friend.getId());
-        friend.getFriends().add(user.getId());
-        log.info("Количество друзей: {}", user.getFriends().size());
-        return user;
+        friendDbStorage.addFriend(userId, friendId);
+        return userStorage.findById(userId);
     }
 
     public User deleteFriend(Long userId, Long friendId) {
@@ -43,23 +36,14 @@ public class UserService {
         }
         User user = userStorage.findById(userId);
         User friend = userStorage.findById(friendId);
-        user.getFriends().remove(friend.getId());
-        friend.getFriends().remove(user.getId());
-        log.info("Количество друзей: {}", user.getFriends().size());
-        return user;
+        if (user.getFriends().contains(friend.getId())) {
+            friendDbStorage.deleteFriend(userId, friendId);
+        }
+        return userStorage.findById(userId);
     }
 
     public Collection<User> getCommonFriends(Long firstUserId, Long secondUserId) {
-        if (Objects.equals(firstUserId, secondUserId)) {
-            throw new DuplicatedDataException("Id пользователей не должны совпадать");
-        }
-        Set<Long> user1 = userStorage.findById(firstUserId).getFriends();
-        Set<Long> user2 = userStorage.findById(secondUserId).getFriends();
-        Set<Long> resultSet = new HashSet<>(user1);
-        resultSet.retainAll(user2);
-        return resultSet.stream()
-                .map(id -> userStorage.findById(id))
-                .toList();
+        return userStorage.getCommonFriends(firstUserId, secondUserId);
     }
 
     public Collection<User> findAll() {
