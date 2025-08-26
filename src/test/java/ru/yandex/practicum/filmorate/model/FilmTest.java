@@ -6,7 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import ru.yandex.practicum.filmorate.controller.FilmController;
+import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
 import java.time.LocalDate;
 import java.util.Set;
@@ -89,15 +89,15 @@ public class FilmTest {
     void releaseDateValidationTest() {
         assertTrue(violations.isEmpty());
 
-        film.setReleaseDate(FilmController.MOVIE_BIRTHDAY.plusDays(1));
+        film.setReleaseDate(FilmStorage.MOVIE_BIRTHDAY.plusDays(1));
         violations = validator.validate(film);
         assertEquals(0, violations.size());
 
-        film.setReleaseDate(FilmController.MOVIE_BIRTHDAY);
+        film.setReleaseDate(FilmStorage.MOVIE_BIRTHDAY);
         violations = validator.validate(film);
         assertEquals(0, violations.size());
 
-        film.setReleaseDate(FilmController.MOVIE_BIRTHDAY.minusDays(1));
+        film.setReleaseDate(FilmStorage.MOVIE_BIRTHDAY.minusDays(1));
         violations = validator.validate(film);
         assertEquals(1, violations.size());
     }
