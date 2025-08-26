@@ -2,7 +2,7 @@ package ru.yandex.practicum.filmorate.validator;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
-import ru.yandex.practicum.filmorate.controller.FilmController;
+import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
 import java.time.LocalDate;
 
@@ -14,7 +14,7 @@ public class FilmReleaseDateValidator implements ConstraintValidator<FilmRelease
 
     @Override
     public boolean isValid(LocalDate filmReleaseDate, ConstraintValidatorContext cxt) {
-        return FilmController.MOVIE_BIRTHDAY.isBefore(filmReleaseDate)
-                || FilmController.MOVIE_BIRTHDAY.isEqual(filmReleaseDate);
+        return FilmStorage.MOVIE_BIRTHDAY.isBefore(filmReleaseDate)
+                || FilmStorage.MOVIE_BIRTHDAY.isEqual(filmReleaseDate);
     }
 }

@@ -1,66 +1,63 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.DuplicatedDataException;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.user.UserService;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/users")
 @Slf4j
+@AllArgsConstructor
 public class UserController {
-    private Map<Long, User> users = new HashMap<>();
-    private Long userId = 0L;
+    private UserService userService;
 
     @GetMapping
     public Collection<User> findAll() {
-        return users.values();
+        return userService.findAll();
+    }
+
+    @GetMapping("/{id}")
+    public User findById(@PathVariable("id") Long id) {
+        return userService.findById(id);
     }
 
     @PostMapping
     public User create(@Valid @RequestBody User user) {
-        isEmailExists(user);
-        user.setId(getUserId());
-        users.put(user.getId(), user);
-        log.info("Новый пользователь: {} Общее количество пользователей: {}", user, users.size());
-        return user;
+        return userService.create(user);
     }
 
     @PutMapping
-    public User update(@Valid @RequestBody User newUser) {
-        isEmailExists(newUser);
-        if (users.containsKey(newUser.getId())) {
-            User oldUser = users.get(newUser.getId());
-            oldUser = newUser;
-            return oldUser;
-        }
-        throw new NotFoundException("Пользователь с id = " + newUser.getId() + " не найден");
+    public User update(@Valid @RequestBody User user) {
+        return userService.update(user);
     }
 
-    private Long getUserId() {
-        return ++userId;
+    @DeleteMapping("/{id}")
+    public User delete(@PathVariable("id") Long id) {
+        return userService.delete(id);
     }
 
-    private void resetUserId() {
-        userId = 0L;
+    @PutMapping("/{id}/friends/{friendId}")
+    public User addFriend(@PathVariable("id") Long id, @PathVariable("friendId") Long friendId) {
+        return userService.addFriend(id, friendId);
     }
 
-    private void isEmailExists(User newUser) {
-        boolean result = users.values()
-                .stream()
-                .filter(user -> !(user.getId().equals(newUser.getId())))
-                .map(User::getEmail)
-                .anyMatch(email -> email.equals(newUser.getEmail()));
-        if (result) {
-            String message = "Этот имейл уже используется";
-            log.warn(message);
-            throw new DuplicatedDataException(message);
-        }
+    @DeleteMapping("/{id}/friends/{friendId}")
+    public User deleteFriend(@PathVariable("id") Long id, @PathVariable("friendId") Long friendId) {
+        return userService.deleteFriend(id, friendId);
+    }
+
+    @GetMapping("/{id}/friends")
+    public Collection<User> getFriends(@PathVariable("id") Long id) {
+        return userService.getFriends(id);
+    }
+
+    @GetMapping("/{id}/friends/common/{otherId}")
+    public Collection<User> getCommonFriends(@PathVariable("id") Long id, @PathVariable("otherId") Long otherId) {
+        return userService.getCommonFriends(id, otherId);
     }
 }
