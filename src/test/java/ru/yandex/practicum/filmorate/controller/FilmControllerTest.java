@@ -38,8 +38,12 @@ public class FilmControllerTest {
 
     @BeforeEach
     void setUp() {
-        film = new Film(1L, "IT", "Children play with a red balloon",
-                LocalDate.of(2017, 9, 7), 135);
+        film = new Film();
+        film.setId(1);
+        film.setName("IT");
+        film.setDescription("Children play with a red balloon");
+        film.setReleaseDate(LocalDate.of(2017, 9, 7));
+        film.setDuration(135);
     }
 
     @Test
